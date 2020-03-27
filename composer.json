@@ -1,0 +1,16 @@
+{
+    "name": "tp_poo_2/app",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Yadallee Bilaal",
+            "email": "m.yadallee@ecole-ipssi.net"
+        }
+    ],
+    "require": {},
+    "autoload":{
+	"psr-4":{
+		"App\\":"src/"
+	}
+    }
+}

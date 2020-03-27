@@ -1,0 +1,30 @@
+#présentation des différents dao possibles + instances respectifs à initialiser selon le type de dao (SGBD, XML)
+dao:
+  db:
+    - controller: App\Controller\UserController
+      instances:
+        userdao: App\Dao\DbDaoUser
+
+    - controller: App\Controller\ShopController
+      instances:
+        userdao: App\Dao\DbDaoUser
+        productdao: App\Dao\DbDaoProduit
+        categorydao: App\Dao\DbDaoCategorie
+        basketdao: App\Dao\DbDaoPanier
+
+  xml:
+    - controller: App\Controller\UserController
+      instances:
+        userdao: App\Dao\XmlDaoUser
+        productdao: App\Dao\XmlDaoProduit
+        categorydao: App\Dao\XmlDaoCategorie
+        basketdao: App\Dao\XmlDaoPanier
+
+
+UserController:
+  userdao: db
+
+ShopController:
+  userdao: db
+  productdao: db
+  categorydao: db

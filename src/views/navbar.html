@@ -1,0 +1,35 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Ma boutique en ligne</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="index.php">Accueil</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Ingrédients</a>
+            </li>
+        </ul>
+
+        <ul class="navbar-nav ml-auto">
+            <select id="select_critere" class="selectpicker mr-3">
+                <option value="-1">Critère de recherche</option>
+                <option value="produit">Produit</option>
+                <option value="categorie">Catégorie</option>
+                <option value="ingredient">Ingrédient</option>
+            </select>
+            <form class="form-inline my-2 my-lg-0" method="get" action="index.php">
+                <input type="hidden" name="method" value="shop" />
+                <input type="hidden" name="critere_recherche" value="-1" />
+                <input id="recherche" name="text_recherche" class="form-control mr-sm-2" type="search" placeholder="Rechercher un produit..." aria-label="Rechercher">
+                <button class="btn btn-outline-success my-2 my-sm-0" id="searchBtn" type="submit" disabled>Rechercher</button>
+            </form>
+            <li class="nav-item active mx-1">
+                <button class="btn btn-outline-danger my-2 my-sm-0" id="logout">Se déconnecter</button>
+            </li>
+        </ul>
+    </div>
+</nav>
