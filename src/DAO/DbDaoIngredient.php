@@ -26,7 +26,7 @@ class DbDaoIngredient extends DbDao
         $stmt->execute([$id]);
         $result = $stmt->fetchAll();
         if(count($result) == 0)
-            throw new IngredientException("L'ingrédient $id n'existe pas");
+            throw new IngredientException("L'ingrédient $id n'existe pas",404);
         $data = $result[0];
         $ingredient = new Ingredient();
         $ingredient->setIdi($data["idi"]);
@@ -91,7 +91,7 @@ class DbDaoIngredient extends DbDao
         $stmt->execute($map);
         $data = $stmt->fetchAll(\PDO::FETCH_ASSOC); //on retourne un tableau associatif pour plus de facilité
         if(count($data) == 0)
-            throw new IngredientException("L'ingrédient recherché n'existe pas");
+            throw new IngredientException("L'ingrédient recherché n'existe pas",404);
         $result = $data[0];
         $ingredient = new Ingredient();
         $ingredient->setIdi($result["idi"]);
@@ -120,7 +120,7 @@ class DbDaoIngredient extends DbDao
         $stmt->execute($map);
         $data = $stmt->fetchAll(\PDO::FETCH_ASSOC); //on retourne un tableau associatif pour plus de facilité
         if(count($data) == 0)
-            throw new IngredientException("Aucun ingrédient ne correspond aux paramètres fournis");
+            throw new IngredientException("Aucun ingrédient correspondant",404);
         $entites = [];
         foreach ($data as $tblData)
         {
@@ -140,7 +140,7 @@ class DbDaoIngredient extends DbDao
         $stmt->execute();
         $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         if(count($data) == 0)
-            throw new IngredientException("Aucun ingrédient disponible");
+            throw new IngredientException("Aucun ingrédient disponible",404);
         $entites = [];
         foreach ($data as $tblData)
         {
@@ -188,7 +188,7 @@ class DbDaoIngredient extends DbDao
         $stmt->execute($map);
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC); //on retourne un tableau associatif pour plus de facilité
         if(count($result) == 0)
-            throw new IngredientException("Aucun ingrédient ne correspond aux paramètres fournis");
+            throw new IngredientException("Aucun ingrédient correspondant",404);
         $finalResult = $result[0];
         $entite = new Ingredient();
         $entite->setIdi($finalResult["idi"]);
@@ -217,7 +217,7 @@ class DbDaoIngredient extends DbDao
         $stmt->execute($map);
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC); //on retourne un tableau associatif pour plus de facilité
         if(count($result) == 0)
-            throw new IngredientException("Aucun ingrédient ne correspond aux paramètres fournis");
+            throw new IngredientException("Aucun ingrédient correspondant",404);
         $entites = [];
         foreach ($result as $tblData)
         {

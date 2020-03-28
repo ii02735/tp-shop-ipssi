@@ -6,7 +6,7 @@ namespace App\Entite;
 
 class Produit implements Entite
 {
-    use JsonSerialize;
+    use Serialize;
     /**
      * @var int $idp
      */

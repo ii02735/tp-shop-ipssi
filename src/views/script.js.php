@@ -1,26 +1,10 @@
 $(function(){
     $("#searchBtn").prop("disabled",false);
     $(".modal-footer #confirmChange").prop("disabled",true);
-    $.get("index.php?method=getCart").done(function(data,status){
-        data = JSON.parse(data);
-        for(produit of data)
+    getCart().fail(function(data,status){
+        if(data.status === 404)
         {
-            $("#myProducts").append(
-                "<tr class='produit' id='produit_"+produit.id_panier+"'>" +
-                "<td>" + produit.nom + "</td>"
-                + "<td>" + produit.prix + "€</td>" +
-                "<td><input type='number' min='1' style='width:80%' id='change_qte" + produit.id_panier + "' class='change_qte' value='" + produit.qte + "'/>" +
-                "<input type='hidden' class='delete' id='delete_"+produit.id_panier+"' value='0'>"+
-                "<input type='hidden' name='id' value='" + produit.id_panier + "'/>" +
-                "<input type='hidden' name='qte' id='initialQte_" + produit.id_panier + "' value='" + produit.qte + "'/></td>" +
-                "<td><button class='btn btn-warning removeProduct' value=" + produit.id_panier + ">Retirer</button></td>"
-                + "</tr>")
-        }
-
-    }).fail(function(data,status){
-        if(status == "error")
-        {
-            console.log("Votre panier est pour le moment vide");
+            console.log("404 Votre panier est pour le moment vide");
             $("button[data-target='#cart']").prop("disabled",true);
             $("#validateCart").prop("disabled",true)
         }
@@ -102,24 +86,29 @@ $(function(){
             data.push({ id_panier: id, qte: this.value, delete: $("#delete_"+id).val() })
         })
 
-        $.post("index.php?method=updateCarts",{ data },function(response){
+        $.post("index.php?method=updateCarts",{ data }).always(function(response){
             $(".modal-footer #confirmChange").prop("disabled",true);
-            $("#cart").modal("hide");
-            $("#cart").modal("dispose");
 
             for(node of data) {
                 if (node.delete === "1") {
                     console.log("Le nœud pour l'id " + node.id_panier + " doit être supprimé...")
                     $("#produit_" + node.id_panier).remove();
+                }else
+                {
+                    $("#initialQte_"+node.id_panier).val(node.qte);
                 }
             }
-
-            console.log(response);
-        }).fail(function(response){
-            console.log(response);
+            $("#cart").modal("hide");
+            $("#cart").modal("dispose");
+        }).fail(function(data,status){
+            if(data.status === 404)
+            {
+                console.log("404 Votre panier est pour le moment vide");
+                $("button[data-target='#cart']").prop("disabled",true);
+                $("#validateCart").prop("disabled",true)
+            }
         })
 
-        console.log(data);
     })
     $("#btnCart").click(function(){
         $(".modal-footer #confirmChange").prop("disabled",true);
@@ -149,3 +138,28 @@ $(function(){
     })
 
 })
+
+/**
+ * Récupérer le panier complet depuis le serveur
+ * @returns Promise
+ */
+function getCart()
+{
+    return $.get("index.php?method=getCart").done(function(data,status){
+        data = JSON.parse(data);
+        for(produit of data)
+        {
+            $("#myProducts").append(
+                "<tr class='produit' id='produit_"+produit.id_panier+"'>" +
+                "<td>" + produit.nom + "</td>"
+                + "<td>" + produit.prix + "€</td>" +
+                "<td><input type='number' min='1' style='width:80%' id='change_qte" + produit.id_panier + "' class='change_qte' value='" + produit.qte + "'/>" +
+                "<input type='hidden' class='delete' id='delete_"+produit.id_panier+"' value='0'>"+
+                "<input type='hidden' name='id' value='" + produit.id_panier + "'/>" +
+                "<input type='hidden' name='qte' id='initialQte_" + produit.id_panier + "' value='" + produit.qte + "'/></td>" +
+                "<td><button class='btn btn-warning removeProduct' value=" + produit.id_panier + ">Retirer</button></td>"
+                + "</tr>")
+        }
+
+    });
+}

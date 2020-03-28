@@ -26,5 +26,10 @@ abstract class DbDao implements IDao
         $this->pdo = require __DIR__."/../../config/PDO.php";
     }
 
+    //Destruction de la connexion PDO à la BDD
+    public function __destruct()
+    {
+        $this->pdo = null;
+    }
 
 }

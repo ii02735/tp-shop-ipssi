@@ -24,7 +24,7 @@ class DbDaoProduit extends DbDao
         $stmt->execute([$id]);
         $result = $stmt->fetchAll();
         if(count($result) == 0)
-            throw new ProduitException("Le produit $id n'existe pas");
+            throw new ProduitException("Le produit $id n'existe pas",404);
         $data = $result[0];
         $produit = new Produit();
         $produit->setIdp($data["idp"]);
@@ -86,7 +86,7 @@ class DbDaoProduit extends DbDao
         $stmt->execute($map);
         $data = $stmt->fetchAll(\PDO::FETCH_ASSOC); //on retourne un tableau associatif pour plus de facilité
         if(count($data) == 0)
-            throw new ProduitException("Le produit recherché n'existe pas");
+            throw new ProduitException("Le produit recherché n'existe pas",404);
         $result = $data[0];
         $produit = new Produit();
         $produit->setIdp($result["id"]);
@@ -116,7 +116,7 @@ class DbDaoProduit extends DbDao
         $stmt->execute($map);
         $data = $stmt->fetchAll(\PDO::FETCH_ASSOC); //on retourne un tableau associatif pour plus de facilité
         if(count($data) == 0)
-            throw new ProduitException("Aucun produit ne correspond aux paramètres fournis");
+            throw new ProduitException("Aucun produit correspondant",404);
         $entites = [];
         foreach ($data as $tblData)
         {
@@ -137,7 +137,7 @@ class DbDaoProduit extends DbDao
         $stmt->execute();
         $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         if(count($data) == 0)
-            throw new ProduitException("Aucun produit disponible");
+            throw new ProduitException("Aucun produit disponible",404);
         $entites = [];
         foreach ($data as $tblData)
         {
@@ -186,7 +186,7 @@ class DbDaoProduit extends DbDao
         $stmt->execute($map);
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC); //on retourne un tableau associatif pour plus de facilité
         if(count($result) == 0)
-            throw new ProduitException("Aucun produit ne correspond aux paramètres fournis");
+            throw new ProduitException("Aucun produit correspondant",404);
         $finalResult = $result[0];
         $entite = new Produit();
         $entite->setIdp($finalResult["idp"]);
@@ -216,7 +216,7 @@ class DbDaoProduit extends DbDao
         $stmt->execute($map);
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC); //on retourne un tableau associatif pour plus de facilité
         if(count($result) == 0)
-            throw new ProduitException("Aucun produit ne correspond aux paramètres fournis");
+            throw new ProduitException("Aucun produit correspondant",404);
         $entites = [];
         foreach ($result as $tblData)
         {

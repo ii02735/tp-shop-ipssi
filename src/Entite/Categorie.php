@@ -6,7 +6,7 @@ namespace App\Entite;
 
 class Categorie implements Entite
 {
-    use JsonSerialize;
+    use Serialize;
     /**
      * @var int $idc
      */

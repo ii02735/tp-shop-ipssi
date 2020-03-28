@@ -134,7 +134,7 @@ class ShopController
             return $reponse_panier;
         }catch(PanierException $e) //On remonte les exceptions pour qu'elles soient gérées dans la méthode qui invoque getCart
         {
-            throw new PanierException($e->getMessage());
+            throw new PanierException($e->getMessage(),$e->getCode());
         }
     }
 
@@ -183,7 +183,7 @@ class ShopController
                 }
                 try { //on doit vérifier si le panier est vide après mise à jour
                       //l'exception confirmera cette règle
-                    $this->panierDao->find(["id_client" => $_SESSION["utilisateur"]]);
+                    $this->panierDao->find(["id_client" => $_SESSION["utilisateur"]->getId()]);
                     echo "Votre panier a bien été mis à jour";
                 }catch(PanierException $e)
                 {
@@ -260,7 +260,7 @@ class ShopController
                         }
                         break;
                     default:
-                        header("Location: index.php");
+                        header("Location: index.php?method=shop");
                         exit;
                 }
                 Utilitaire::render("boutique.php",["produits" => $response]);
@@ -268,7 +268,6 @@ class ShopController
                 Utilitaire::render("boutique.php",["erreur" => $e->getMessage()]);
             }
     }
-
     /**
      * Méthode qui va confirmer le panier de l'utilisateur
      * Et par conséquent, lui afficher une liste de ses courses
@@ -277,11 +276,24 @@ class ShopController
     {
         if(Utilitaire::exists($_SESSION,["utilisateur"])){
             try {
-                $panier = $this->panierDao->find(["id_client" => $_SESSION["utilisateur"]->getId()]);
+                $panier = $this->getCart();
+                $panier_riche = [];
+                foreach ($panier as $produit_panier)
+                {
+                    $produit = $this->produitDao->get($produit_panier["idp"]);
+                    $categorie = $this->categorieDao->findOne(["idp" => $produit_panier["idp"]])->getLibelle();
+                    $panier_riche[] = [
+                        "produit" => $produit,
+                        "categorie" => $categorie ];
+                }
+                Utilitaire::render("confirmation.php",["panier" => $panier_riche]);
             }catch(PanierException $e)
             {
-                Utilitaire::render("confirmation.php",["erreur" => $e->getMessage()]);
+                if($e->getCode() == 404)
+                    Utilitaire::render("confirmation.php",["erreur" => "Vous ne possédez pas de panier : impossible de confirmer vos achats"]);
             }
+        }else{
+            header("index.php");
         }
     }
 }

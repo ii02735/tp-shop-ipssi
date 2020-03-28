@@ -26,7 +26,7 @@ class DbDaoPanier extends DbDao
         $stmt->execute([$id]);
         $result = $stmt->fetchAll();
         if(count($result) == 0)
-            throw new PanierException("Le panier $id n'existe pas");
+            throw new PanierException("Le panier $id n'existe pas",404);
         $data = $result[0];
         $panier = new Panier();
         $panier->setIdPanier($data["id_panier"]);
@@ -88,7 +88,7 @@ class DbDaoPanier extends DbDao
         $stmt->execute($map);
         $data = $stmt->fetchAll(\PDO::FETCH_ASSOC); //on retourne un tableau associatif pour plus de facilité
         if(count($data) == 0)
-            throw new PanierException("Le panier recherché n'existe pas");
+            throw new PanierException("Le panier recherché n'existe pas",404);
         $result = $data[0];
         $panier = new Panier();
         $panier->setIdPanier($result["id_panier"]);
@@ -118,7 +118,7 @@ class DbDaoPanier extends DbDao
         $stmt->execute($map);
         $data = $stmt->fetchAll(\PDO::FETCH_ASSOC); //on retourne un tableau associatif pour plus de facilité
         if(count($data) == 0)
-            throw new PanierException("Aucun panier ne correspond aux paramètres fournis");
+            throw new PanierException("Aucun panier correspondant",404);
         $entites = [];
         foreach ($data as $tblData)
         {
@@ -138,7 +138,7 @@ class DbDaoPanier extends DbDao
         $stmt->execute();
         $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         if(count($data) == 0)
-            throw new PanierException("Aucun panier disponible");
+            throw new PanierException("Aucun panier disponible",404);
         $entites = [];
         foreach ($data as $tblData)
         {
@@ -187,7 +187,7 @@ class DbDaoPanier extends DbDao
         $stmt->execute($map);
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC); //on retourne un tableau associatif pour plus de facilité
         if(count($result) == 0)
-            throw new PanierException("Aucun panier ne correspond aux paramètres fournis");
+            throw new PanierException("Aucun panier correspondant",404);
         $finalResult = $result[0];
         $entite = new Panier();
         $entite->setIdPanier($finalResult["id_panier"]);
@@ -217,7 +217,7 @@ class DbDaoPanier extends DbDao
         $stmt->execute($map);
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC); //on retourne un tableau associatif pour plus de facilité
         if(count($result) == 0)
-            throw new PanierException("Aucun panier ne correspond aux paramètres fournis");
+            throw new PanierException("Aucun panier correspondant",404);
         $entites = [];
         foreach ($result as $tblData)
         {

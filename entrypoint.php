@@ -49,7 +49,7 @@ if($file != "index.php") {
                 try {
                     $panierDao = new \App\DAO\DbDaoPanier();
                     $panierDao->find(["id_client" => $_SESSION["utilisateur"]->getId()]);
-                    header("Location: $index?method=confirmCart");
+                    header("Location: $index?method=validateCart");
                 }catch (\App\Exception\PanierException $e)
                 {
                     header("Location: $index?method=shop");

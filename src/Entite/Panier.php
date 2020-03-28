@@ -6,7 +6,7 @@ namespace App\Entite;
 
 class Panier implements Entite
 {
-    use JsonSerialize;
+    use Serialize;
     /**
      * @var int $id_panier
      */

@@ -25,7 +25,7 @@ class DbDaoCategorie extends DbDao
         $stmt->execute([$id]);
         $result = $stmt->fetchAll();
         if(count($result) == 0)
-            throw new CategorieException("La catégorie $id n'existe pas");
+            throw new CategorieException("La catégorie $id n'existe pas",404);
         $data = $result[0];
         $categorie = new Categorie();
         $categorie->setIdc($data["idc"]);
@@ -90,7 +90,7 @@ class DbDaoCategorie extends DbDao
         $stmt->execute($map);
         $data = $stmt->fetchAll(\PDO::FETCH_ASSOC); //on retourne un tableau associatif pour plus de facilité
         if(count($data) == 0)
-            throw new CategorieException("La catégorie recherchée n'existe pas");
+            throw new CategorieException("La catégorie recherchée n'existe pas",404);
         $result = $data[0];
         $categorie = new Categorie();
         $categorie->setIdc($result["idc"]);
@@ -119,7 +119,7 @@ class DbDaoCategorie extends DbDao
         $stmt->execute($map);
         $data = $stmt->fetchAll(\PDO::FETCH_ASSOC); //on retourne un tableau associatif pour plus de facilité
         if(count($data) == 0)
-            throw new CategorieException("Aucune catégorie ne correspond aux paramètres fournis");
+            throw new CategorieException("Aucune catégorie correspondante",404);
         $entites = [];
         foreach ($data as $tblData)
         {
@@ -187,7 +187,7 @@ class DbDaoCategorie extends DbDao
         $stmt->execute($map);
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC); //on retourne un tableau associatif pour plus de facilité
         if(count($result) == 0)
-            throw new CategorieException("Aucune catégorie ne correspond aux paramètres fournis");
+            throw new CategorieException("Aucune catégorie correspondante",404);
         $finalResult = $result[0];
         $entite = new Categorie();
         $entite->setIdc($finalResult["idc"]);
@@ -216,7 +216,7 @@ class DbDaoCategorie extends DbDao
         $stmt->execute($map);
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC); //on retourne un tableau associatif pour plus de facilité
         if(count($result) == 0)
-            throw new CategorieException("Aucune catégorie ne correspond aux paramètres fournis");
+            throw new CategorieException("Aucune catégorie correspondante",404);
         $entites = [];
         foreach ($result as $tblData)
         {

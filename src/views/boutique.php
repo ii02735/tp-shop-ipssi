@@ -76,7 +76,7 @@
                 <th>Description</th>
                 <th>Catégorie</th>
                 <th>Ingrédients</th>
-                <th>Prix</th>
+                <th>Prix unitaire</th>
                 <th>Action</th>
             </tr>
             <?php
@@ -95,7 +95,7 @@
                     <?php echo $object["ingredient"] ?>
                 </td>
                 <td>
-                    <?php echo $object["produit"]->getPrix() ?>
+                    <?php echo $object["produit"]->getPrix() ?>&nbsp;&euro;
                 </td>
                 <td>
                     <button class="btn btn-info ajout" value='<?php echo json_encode(["nom"=>$object["produit"]->getNom(),"id"=>$object["produit"]->getIdp()]) ?>' data-toggle="modal" data-target="#modal">Ajouter au panier</button>
@@ -107,7 +107,7 @@
             echo "<h3 class='error mb-4'>$erreur</h3>";
           endif;
     ?>
-        <button class="btn btn-primary" data-toggle="modal" data-target="#cart">Voir mon panier</button>
+        <button class="btn btn-primary" id="btnCart" data-toggle="modal" data-target="#cart">Voir mon panier</button>
         <button class="btn btn-success" id="validateCart">Valider mon panier</button>
 
     </section>

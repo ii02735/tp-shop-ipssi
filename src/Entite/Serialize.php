@@ -4,7 +4,7 @@
 namespace App\Entite;
 
 
-trait JsonSerialize
+trait Serialize
 {
     /**
      * @return string
@@ -13,5 +13,9 @@ trait JsonSerialize
     public function toJson():string
     {
         return json_encode(get_object_vars($this));
+    }
+
+    public function toArray(): array{
+        return json_decode($this->toJson());
     }
 }

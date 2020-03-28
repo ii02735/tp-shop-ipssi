@@ -6,7 +6,7 @@ namespace App\Entite;
 
 class Utilisateur extends Personnes
 {
-    use JsonSerialize;
+    use Serialize;
     /**
      * @var int $id;
      */

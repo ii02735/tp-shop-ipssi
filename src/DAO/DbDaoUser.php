@@ -65,7 +65,7 @@ class DbDaoUser extends DbDao
         $stmt->execute($map);
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC); //on retourne un tableau associatif pour plus de facilité
         if(count($result) == 0)
-            throw new UtilisateurException("L'utilisateur n'existe pas");
+            throw new UtilisateurException("L'utilisateur n'existe pas",404);
         $finalResult = $result[0];
         $user = new Utilisateur();
         $user->setId($finalResult["id"]);
@@ -96,7 +96,7 @@ class DbDaoUser extends DbDao
         $stmt->execute($map);
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC); //on retourne un tableau associatif pour plus de facilité
         if(count($result) == 0)
-            throw new UtilisateurException("Aucun utilisateur ne correspond aux paramètres fournis");
+            throw new UtilisateurException("Aucun utilisateur correspondant");
         $data = $result;
         $entites = [];
         foreach ($data as $tblData)
@@ -151,7 +151,7 @@ class DbDaoUser extends DbDao
         $stmt->execute();
         $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         if(count($data) == 0)
-            throw new UtilisateurException("Aucun utilisateur disponible");
+            throw new UtilisateurException("Aucun utilisateur disponible",404);
         $entites = [];
         foreach ($data as $tblData)
         {
@@ -201,7 +201,7 @@ class DbDaoUser extends DbDao
         $stmt->execute($map);
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC); //on retourne un tableau associatif pour plus de facilité
         if(count($result) == 0)
-            throw new UtilisateurException("Aucun utilisateur ne correspond aux paramètres fournis");
+            throw new UtilisateurException("Aucun utilisateur correspondant",404);
         $finalResult = $result[0];
         $entite = new Utilisateur();
         $entite->setId($finalResult["id"]);
@@ -230,7 +230,7 @@ class DbDaoUser extends DbDao
         $stmt->execute($map);
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC); //on retourne un tableau associatif pour plus de facilité
         if(count($result) == 0)
-            throw new UtilisateurException("Aucun utilisateur ne correspond aux paramètres fournis");
+            throw new UtilisateurException("Aucun utilisateur correspondant",404);
         $entites = [];
         foreach ($result as $tblData)
         {

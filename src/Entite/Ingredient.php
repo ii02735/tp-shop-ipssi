@@ -6,7 +6,7 @@ namespace App\Entite;
 
 class Ingredient implements Entite
 {
-    use JsonSerialize;
+    use Serialize;
     /**
      * @var int $idi
      */
