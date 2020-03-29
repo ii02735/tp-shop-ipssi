@@ -16,6 +16,6 @@ trait Serialize
     }
 
     public function toArray(): array{
-        return json_decode($this->toJson());
+        return json_decode(json_encode(get_object_vars($this)),true);
     }
 }

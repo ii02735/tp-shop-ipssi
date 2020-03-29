@@ -45,7 +45,7 @@ class DbDaoCategorie extends DbDao
         $stmt = $this->pdo->prepare("select idc from ".$this->tableName." order by idc desc limit 1"); //On récupère le dernier id existant
         $stmt->execute();
         $id = $stmt->fetchColumn();
-        $entite->setId($id);
+        $entite->setIdc($id);
         return $entite;
     }
 
@@ -61,6 +61,7 @@ class DbDaoCategorie extends DbDao
             $stmt->execute([$entite->getIdp(), $entite->getLibelle(), $entite->getIdc()]);
         }catch(\PDOException $e)
         {
+            file_put_contents(__DIR__."/../../log_error.txt",print_r(["message" => $e->getMessage(), "date" => date("Y-m-d H:i")],true),FILE_APPEND);
             throw new CategorieException("La catégorie ".$entite->getIdc()." n'a pas pu être mis à jour");
         }
         return $entite;
@@ -164,6 +165,7 @@ class DbDaoCategorie extends DbDao
             $stmt->execute([$entite->getIdc()]);
         }catch (\PDOException $e)
         {
+            file_put_contents(__DIR__."/../../log_error.txt",print_r(["message" => $e->getMessage(), "date" => date("Y-m-d H:i")],true),FILE_APPEND);
             throw new CategorieException("La catégorie ".$entite->getIdc()." n'a pas pu être supprimée");
         }
     }

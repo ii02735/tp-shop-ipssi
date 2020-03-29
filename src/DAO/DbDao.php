@@ -24,6 +24,11 @@ abstract class DbDao implements IDao
     {
         $this->tableName = $tableName;
         $this->pdo = require __DIR__."/../../config/PDO.php";
+        /**
+         * Activation des exceptions de PDO
+         */
+        $this->pdo->setAttribute( $this->pdo::ATTR_ERRMODE, $this->pdo::ERRMODE_EXCEPTION );
+        $this->pdo->setAttribute( $this->pdo::ATTR_EMULATE_PREPARES, FALSE );
     }
 
     //Destruction de la connexion PDO à la BDD

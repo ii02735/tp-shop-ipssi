@@ -66,6 +66,8 @@ class Produit implements Entite
      */
     public function getDescription(): string
     {
+        if(is_null($this->description))
+            return null;
         return $this->description;
     }
 

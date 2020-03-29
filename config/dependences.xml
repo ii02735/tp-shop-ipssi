@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <controllers>
+      <!--Présentation des différents controlleurs avec leurs instances à injecter-->
+      <controller class="App\Controller\UserController">
+        <instance name="userDao">
+          <dbdao>App\DAO\DbDaoUser</dbdao>
+          <xmldao>App\DAO\XmlDaoUser</xmldao>
+        </instance>
+      </controller>
+      <controller class="App\Controller\ShopController">
+        <instance name="categorieDao">
+          <dbdao>App\DAO\DbDaoCategorie</dbdao>
+          <xmldao>App\DAO\XmlDaoCategorie</xmldao>
+        </instance>
+        <instance name="ingredientDao">
+          <dbdao>App\DAO\DbDaoIngredient</dbdao>
+          <xmldao>App\DAO\XmlDaoIngredient</xmldao>
+        </instance>
+        <instance name="produitDao">
+          <dbdao>App\DAO\DbDaoProduit</dbdao>
+          <xmldao>App\DAO\XmlDaoProduit</xmldao>
+        </instance>
+        <instance name="panierDao">
+          <dbdao>App\DAO\DbDaoPanier</dbdao>
+          <xmldao>App\DAO\XmlDaoPanier</xmldao>
+        </instance>
+        <instance name="userDao">
+          <dbdao>App\DAO\DbDaoUser</dbdao>
+          <xmldao>App\DAO\XmlDaoUser</xmldao>
+        </instance>
+      </controller>
+      <controller class="App\Controller\AdminController">
+        <instance name="categorieDao">
+          <dbdao>App\DAO\DbDaoCategorie</dbdao>
+          <xmldao>App\DAO\XmlDaoCategorie</xmldao>
+        </instance>
+        <instance name="ingredientDao">
+          <dbdao>App\DAO\DbDaoIngredient</dbdao>
+          <xmldao>App\DAO\XmlDaoIngredient</xmldao>
+        </instance>
+        <instance name="produitDao">
+          <dbdao>App\DAO\DbDaoProduit</dbdao>
+          <xmldao>App\DAO\XmlDaoProduit</xmldao>
+        </instance>
+        <instance name="panierDao">
+          <dbdao>App\DAO\DbDaoPanier</dbdao>
+          <xmldao>App\DAO\XmlDaoPanier</xmldao>
+        </instance>
+        <instance name="userDao">
+          <dbdao>App\DAO\DbDaoUser</dbdao>
+          <xmldao>App\DAO\XmlDaoUser</xmldao>
+        </instance>
+      </controller>
+    </controllers>
+    <load>
+      <!-- indiquer les controlleurs dont leurs instances doivent être initialisés automatiquement + mode du dao pour chaque instance-->
+      <!-- La valeur des paramètres doivent respecter la casse (nom balise) -->
+      <controller class="App\Controller\UserController" userDao="dbdao"/>
+      <controller class="App\Controller\ShopController" userDao="dbdao" categorieDao="dbdao" ingredientDao="dbdao" produitDao="dbdao" panierDao="dbdao"/>
+      <controller class="App\Controller\AdminController" userDao="dbdao" categorieDao="dbdao" ingredientDao="dbdao" produitDao="dbdao" panierDao="dbdao"/>
+    </load>
+</root>

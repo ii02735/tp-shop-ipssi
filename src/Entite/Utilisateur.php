@@ -12,14 +12,30 @@ class Utilisateur extends Personnes
      */
     private $id;
     /**
-     * @var string $username
+     * @var string $name
      */
-    private $username;
+    private $name;
+
+    /**
+     * @var string $firstname
+     */
+    private $firstname;
+
+    /**
+     * @var string $email
+     */
+    private $email;
 
     /**
      * @var string $password
      */
     private $password;
+
+    /**
+     * @var string $role
+     * Rôle de l'utilisateur
+     */
+    private $role;
 
     /**
      * @param int $id
@@ -39,19 +55,59 @@ class Utilisateur extends Personnes
     }
 
     /**
-     * @param string $username
+     * @param string $name
      */
-    public function setUsername(string $username): void
+    public function setName(string $name): void
     {
-        $this->username = $username;
+        $this->name = $name;
+    }
+
+    /**
+     * @param string $firstname
+     */
+    public function setFirstname(string $firstname): void
+    {
+        $this->firstname = $firstname;
+    }
+
+    /**
+     * @param string $email
+     */
+    public function setEmail(string $email): void
+    {
+        $this->email = $email;
+    }
+
+    /**
+     * @param string $role
+     */
+    public function setRole(string $role): void
+    {
+        $this->role = $role;
     }
 
     /**
      * @return string
      */
-    public function getUsername(): string
+    public function getEmail(): string
     {
-        return $this->username;
+        return $this->email;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFirstname(): string
+    {
+        return $this->firstname;
     }
 
     /**
@@ -60,6 +116,14 @@ class Utilisateur extends Personnes
     public function getPassword(): string
     {
         return $this->password;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRole(): string
+    {
+        return $this->role;
     }
 
     /**

@@ -5,6 +5,7 @@
     <dbname>learning</dbname>
     <engine>mysql</engine>
     <host>mysql_php_learning</host>
+    <port>3306</port>
     <!-- Utilisation de Docker : l'hôte est donné par le nom du conteneur qui fait tourner le SGBD -->
 
 </configuration>

@@ -41,12 +41,12 @@ class DbDaoIngredient extends DbDao
      */
     public function create(Entite $entite): Entite
     {
-        $stmt = $this->pdo->prepare("insert into ".$this->tableName." (idp,libelle) values (?,?)");
-        $stmt->execute([$entite->getIdp(),$entite->getLibelle()]);
-        $stmt = $this->pdo->prepare("select idc from ".$this->tableName." order by idi desc limit 1"); //On récupère le dernier id existant
+        $stmt = $this->pdo->prepare("insert into ".$this->tableName." (idp,nom) values (?,?)");
+        $stmt->execute([$entite->getIdp(),$entite->getNom()]);
+        $stmt = $this->pdo->prepare("select idi from ".$this->tableName." order by idi desc limit 1"); //On récupère le dernier id existant
         $stmt->execute();
         $id = $stmt->fetchColumn();
-        $entite->setId($id);
+        $entite->setIdi($id);
         return $entite;
     }
 
@@ -58,10 +58,11 @@ class DbDaoIngredient extends DbDao
     public function update(Entite $entite): Entite
     {
         try {
-            $stmt = $this->pdo->prepare("update ".$this->tableName." set idp=?, nom=? where idc=?");
+            $stmt = $this->pdo->prepare("update ".$this->tableName." set idp=?, nom=? where idi=?");
             $stmt->execute([$entite->getIdp(), $entite->getNom(), $entite->getIdi()]);
         }catch(\PDOException $e)
         {
+            file_put_contents(__DIR__."/../../log_error.txt",print_r(["message" => $e->getMessage(), "date" => date("Y-m-d H:i")],true),FILE_APPEND);
             throw new IngredientException("L'ingrédient ".$entite->getIdi()." n'a pas pu être mis à jour");
         }
         return $entite;
@@ -165,6 +166,7 @@ class DbDaoIngredient extends DbDao
             $stmt->execute([$entite->getIdi()]);
         }catch (\PDOException $e)
         {
+            file_put_contents(__DIR__."/../../log_error.txt",print_r(["message" => $e->getMessage(), "date" => date("Y-m-d H:i")],true),FILE_APPEND);
             throw new IngredientException("L'ingrédient ".$entite->getId()." n'a pas pu être supprimé");
         }
     }

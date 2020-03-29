@@ -64,6 +64,7 @@ class DbDaoPanier extends DbDao
             $stmt->execute([$entite->getIdp(), $entite->getQuantite(), $entite->getIdPanier()]);
         }catch (\PDOException $e)
         {
+            file_put_contents(__DIR__."/../../log_error.txt",print_r(["message" => $e->getMessage(), "date" => date("Y-m-d H:i")],true),FILE_APPEND);
             throw new PanierException("Le panier ".$entite->getIdPanier()." n'a pas pu être mis à jour");
         }
         return $entite;
@@ -164,6 +165,7 @@ class DbDaoPanier extends DbDao
         $stmt->execute([$entite->getIdPanier()]);
         }catch (\PDOException $e)
         {
+            file_put_contents(__DIR__."/../../log_error.txt",print_r(["message" => $e->getMessage(), "date" => date("Y-m-d H:i")],true),FILE_APPEND);
             throw new PanierException("Le panier ".$entite->getIdPanier()." n'a pas pu être supprimé");
         }
     }
@@ -186,8 +188,9 @@ class DbDaoPanier extends DbDao
         $stmt = $this->pdo->prepare("SELECT * from ".$this->tableName." where $params order by id_panier desc limit 1");
         $stmt->execute($map);
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC); //on retourne un tableau associatif pour plus de facilité
-        if(count($result) == 0)
-            throw new PanierException("Aucun panier correspondant",404);
+        if(count($result) == 0) {
+            throw new PanierException("Aucun panier correspondant", 404);
+        }
         $finalResult = $result[0];
         $entite = new Panier();
         $entite->setIdPanier($finalResult["id_panier"]);

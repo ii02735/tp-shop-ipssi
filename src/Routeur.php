@@ -3,6 +3,8 @@
 
 namespace App;
 
+use mysql_xdevapi\Exception;
+
 class Routeur
 {
     /**
@@ -103,13 +105,26 @@ class Routeur
         $class = $elements[0];
         $method = $elements[1];
 
-       // $container = simplexml_load_file(__DIR__ . "/../config/daoDependences.xml");
-        //On vérifie si la classe demandée existe, si la fonction peut bien être invoquée
+
         if(class_exists($class) && is_callable([$class,$method])) {
-            $controller = new $class();
+            //les paramètres de la classe doivent-elles êtres chargées automatiquement ?
+            $parameters = Utilitaire::loadDepedencies($class);
+            /**
+             * si des paramètres de la classe ont été mentionnées, et qu'elles sont
+             * mentionnés dans le fichier d'injection, on doit les charger
+             */
+            if(count($parameters) > 0)
+            {
+                //Utilisation de la réflexion pour charger automatiquement la classe
+                //avec les bons paramètres
+                $reflection = new \ReflectionClass($class);
+                $controller = $reflection->newInstanceArgs($parameters);
+            }else { //sinon on construit l'instance normalement
+                $controller = new $class();
+            }
             $controller->$method();
         }else{
-            header("HTTP/1.1 500 Server Error");
+            throw new Exception("Erreur de configuration pour la route $action");
         }
     }
 

@@ -9,6 +9,7 @@ $password = $xml->xpath("/configuration/password")[0];
 $dbname = $xml->xpath("/configuration/dbname")[0];
 $engine = $xml->xpath("/configuration/engine")[0];
 $host = $xml->xpath("/configuration/host")[0];
-$pdo = new \PDO($engine.":host=".$host.";dbname=".$dbname.";charset=utf8mb4",$user,$password);
+$port = $xml->xpath("/configuration/port")[0];
+$pdo = new \PDO($engine.":host=".$host.";port=".$port.";dbname=".$dbname.";charset=utf8mb4",$user,$password);
 
 return $pdo;

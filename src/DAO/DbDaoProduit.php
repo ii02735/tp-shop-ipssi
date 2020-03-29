@@ -46,7 +46,7 @@ class DbDaoProduit extends DbDao
         $stmt = $this->pdo->prepare("select idp from ".$this->tableName." order by idp desc limit 1"); //On récupère le dernier id existant
         $stmt->execute();
         $id = $stmt->fetchColumn();
-        $entite->setId($id);
+        $entite->setIdp($id);
         return $entite;
     }
 
@@ -62,6 +62,7 @@ class DbDaoProduit extends DbDao
             $stmt->execute([$entite->getNom(), $entite->getDescription(), $entite->getPrix(), $entite->getIdp()]);
         }catch(\PDOException $e)
         {
+            file_put_contents(__DIR__."/../../log_error.txt",print_r(["message" => $e->getMessage(), "date" => date("Y-m-d H:i")],true),FILE_APPEND);
             throw new ProduitException("Le produit ".$entite->getIdp()." n'a pas pu être mis à jour");
         }
         return $entite;
@@ -159,10 +160,11 @@ class DbDaoProduit extends DbDao
     public function delete(Entite $entite): void
     {
         try {
-            $stmt = $this->pdo->prepare("delete from ".$this->tableName." where id=?");
-            $stmt->execute([$entite->getId()]);
+            $stmt = $this->pdo->prepare("delete from ".$this->tableName." where idp=?");
+            $stmt->execute([$entite->getIdp()]);
         }catch(\PDOException $e)
         {
+            file_put_contents(__DIR__."/../../log_error.txt",print_r(["message" => $e->getMessage(), "date" => date("Y-m-d H:i")],true),FILE_APPEND);
             throw new ProduitException("Le produit ".$entite->getIdp()." n'a pas pu être supprimé");
         }
     }

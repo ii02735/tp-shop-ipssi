@@ -4,19 +4,12 @@
 namespace App\Controller;
 
 
-use App\DAO\DbDaoCategorie;
-use App\DAO\DbDaoIngredient;
-use App\DAO\DbDaoPanier;
-use App\DAO\DbDaoProduit;
-use App\DAO\DbDaoUser;
 use App\DAO\IDao;
 use App\Entite\Panier;
-use App\Entite\Produit;
 use App\Exception\CategorieException;
 use App\Exception\IngredientException;
 use App\Exception\PanierException;
 use App\Exception\ProduitException;
-use App\Exception\UtilisateurException;
 use App\Utilitaire;
 
 class ShopController
@@ -45,18 +38,21 @@ class ShopController
      * @var IDao $userDao
      */
     private $userDao;
-
-    public function __construct()
+    //injection des dépendences automatique (cf Routeur.php, function invoke())
+    public function __construct(IDao $categorieDao,IDao $ingredientDao,IDao $produitDao,IDao $panierDao,IDao $userDao)
     {
-        $this->categorieDao = new DbDaoCategorie();
-        $this->ingredientDao = new DbDaoIngredient();
-        $this->panierDao = new DbDaoPanier();
-        $this->produitDao = new DbDaoProduit();
-        $this->userDao = new DbDaoUser();
+        $this->categorieDao = $categorieDao;
+        $this->ingredientDao = $ingredientDao;
+        $this->panierDao = $panierDao;
+        $this->produitDao = $produitDao;
+        $this->userDao = $userDao;
     }
 
+    /**
+     * Affichage de tous les produits (page principale)
+     * Ne dépend pas de l'utilisateur est connecté
+     */
     public function index(){
-        if(Utilitaire::exists($_SESSION,["utilisateur"])) {
             //Pour la recherche, on passe par des paramètres get, donc on peut réutiliser la route d'accueil
             if(Utilitaire::exists($_GET,["critere_recherche","text_recherche"])){
                 $this->searchProducts();
@@ -68,16 +64,23 @@ class ShopController
                     {
                         $categorie = $this->categorieDao->findOne(["idp" => $produit->getIdp()]);
                         $ingredient = $this->ingredientDao->findOne(["idp" => $produit->getIdp()]);
-                        $response[] = ["categorie" => $categorie->getLibelle(), "ingredient" => $ingredient->getNom(), "produit" => $produit];
+                        //On fusionne l'objet produit sérialisé en tableau avec les autres propriétés lui appartenant
+                        $response[] = array_merge($produit->toArray(),["categorie" => $categorie->getLibelle(), "idc" => $categorie->getIdc(), "idi" => $ingredient->getIdi(), "ingredient" => $ingredient->getNom()]);
                     }
+                    /**
+                     * Tri du tableau, d'abord par la catégorie, puis ensuite par le nom du produit
+                     * On commence un tri par ordre alphabétique croissant avec la valeur des différentes catégories
+                     * puis ensuite par le nom de chaque produit
+                     */
+                    array_multisort(array_column($response,"categorie"),
+                        SORT_ASC,
+                        array_column($response,"nom"),SORT_ASC,$response);
                     Utilitaire::render("boutique.php", ["produits" => $response]);
                 } catch (ProduitException | CategorieException | IngredientException $e) {
+                    file_put_contents(__DIR__."/../../log_error.txt",print_r(["message" => $e->getMessage(), "date" => date("Y-m-d H:i")],true),FILE_APPEND);
                     Utilitaire::render("boutique.php", ["erreur" => $e->getMessage()]);
                 }
             }
-        }else{
-            header("Location: index.php");
-        }
     }
 
     /**
@@ -121,6 +124,7 @@ class ShopController
                     $produit_data = [
                         "id_panier" => $panier->getIdPanier(), //envoi de l'ID du panier afin de le MODIFIER par la suite (réduire quantité, supprimer produit...)
                         "idp" => $produit_object->getIdp(),
+                        "description" => $produit_object->getDescription(),
                         "nom" => $produit_object->getNom(),
                         "prix" => $produit_object->getPrix(),
                         "qte" => $panier->getQuantite()
@@ -128,9 +132,15 @@ class ShopController
                     array_unshift($reponse_panier, $produit_data); //on récupère tous les produits pour retourner qu'un seul "panier"
                 }catch(PanierException $e)
                 {
+                    file_put_contents(__DIR__."/../../log_error.txt",print_r(["message" => $e->getMessage(), "date" => date("Y-m-d H:i")],true),FILE_APPEND);
                     throw new PanierException($e->getMessage());
                 }
             }
+            /**
+             * Tri du tableau, par le nom lorsqu'on accède au panier
+             */
+            array_multisort(array_column($reponse_panier,"nom"),
+                SORT_ASC,$reponse_panier);
             return $reponse_panier;
         }catch(PanierException $e) //On remonte les exceptions pour qu'elles soient gérées dans la méthode qui invoque getCart
         {
@@ -208,31 +218,26 @@ class ShopController
                     case "produit":
                         $produits = $this->produitDao->findLike(["nom" => "%" . $_GET["text_recherche"] . "%"]);
                         foreach ($produits as $produit) {
-                            $response[] = [
-                                "produit" => $produit
-                            ];
+                            $response[] = $produit->toArray();
                         }
                         foreach ($response as &$array) {
-                            $array["categorie"] = $this->categorieDao->findOne(["idp" => $array["produit"]->getIdp()])->getLibelle();
+                            $array["categorie"] = $this->categorieDao->findOne(["idp" => $array["idp"]])->getLibelle();
                         }
 
                         foreach ($response as &$array) {
-                            $array["ingredient"] = $this->ingredientDao->findOne(["idp" => $array["produit"]->getIdp()])->getNom();
+                            $array["ingredient"] = $this->ingredientDao->findOne(["idp" => $array["idp"]])->getNom();
                         }
                         break;
 
                     case "categorie":
                         $categories = $this->categorieDao->findLike(["libelle" => "%" . $_GET["text_recherche"] . "%"]);
                         foreach ($categories as $categorie) {
-                            $response[] = [
-                                "idp" => $categorie->getIdp(),
-                                "categorie" => $categorie->getLibelle()
-                            ];
+                            $response[] = [ "categorie" => $categorie->getLibelle(), "idp" => $categorie->getIdp() ];
                         }
 
                         foreach ($response as &$array) {
                             $produit_obj = $this->produitDao->get($array["idp"]);
-                            $array["produit"] = $produit_obj;
+                            $array = array_merge($produit_obj->toArray(),$array);
                         }
 
                         foreach ($response as &$array) {
@@ -243,10 +248,7 @@ class ShopController
                     case "ingredient" :
                         $ingredients = $this->ingredientDao->findLike(["nom" => "%" . $_GET["text_recherche"] . "%"]);
                         foreach ($ingredients as $ingredient) {
-                            $response[] = [
-                                "idp" => $ingredient->getIdp(),
-                                "ingredient" => $ingredient->getNom()
-                            ];
+                            $response[] = [ "ingredient" => $ingredient->getNom(), "idp" => $ingredient->getIdp() ];
                         }
                         //Passage par référence pour ajouter les modifications sur le sous-tableau durant la boucle
                         foreach ($response as &$array)
@@ -256,13 +258,21 @@ class ShopController
 
                         foreach ($response as &$array) {
                             $produit_obj = $this->produitDao->get($array["idp"]);
-                            $array["produit"] = $produit_obj;
+                            $array = array_merge($produit_obj->toArray(),$array);
                         }
                         break;
                     default:
-                        header("Location: index.php?method=shop");
+                        header("Location: index.php");
                         exit;
                 }
+               /**
+                * Tri du tableau, d'abord par la catégorie, puis ensuite par le nom du produit
+                * On commence un tri par ordre alphabétique croissant avec la valeur des différentes catégories
+                * puis ensuite par le nom de chaque produit
+                */
+               array_multisort(array_column($response,"categorie"),
+                   SORT_ASC,
+                   array_column($response,"nom"),SORT_ASC,$response);
                 Utilitaire::render("boutique.php",["produits" => $response]);
             } catch (ProduitException | CategorieException | IngredientException $e) {
                 Utilitaire::render("boutique.php",["erreur" => $e->getMessage()]);
@@ -280,12 +290,32 @@ class ShopController
                 $panier_riche = [];
                 foreach ($panier as $produit_panier)
                 {
-                    $produit = $this->produitDao->get($produit_panier["idp"]);
                     $categorie = $this->categorieDao->findOne(["idp" => $produit_panier["idp"]])->getLibelle();
-                    $panier_riche[] = [
-                        "produit" => $produit,
-                        "categorie" => $categorie ];
+                    //enrichissement des objets produits (ajout catégorie + ingrédient)
+                    $panier_riche[] = array_merge($produit_panier,["categorie" => $categorie ]);
                 }
+
+                //Destruction du panier du client en base de données
+
+                foreach ($panier as $produit_panier)
+                {
+                    try {
+                        $this->panierDao->delete($this->panierDao->get($produit_panier["id_panier"]));
+                    }catch(PanierException $e)
+                    {
+                        Utilitaire::render("confirmation.php",["erreur" => "Échec de la validation de votre panier"]);
+                        exit;
+                    }
+                }
+
+                /**
+                 * Tri du tableau, d'abord par la catégorie, puis ensuite par le nom du produit
+                 * On commence un tri par ordre alphabétique croissant avec la valeur des différentes catégories
+                 * puis ensuite par le nom de chaque produit
+                 */
+                array_multisort(array_column($panier_riche,"categorie"),
+                    SORT_ASC,
+                    array_column($panier_riche,"nom"),SORT_ASC,$panier_riche);
                 Utilitaire::render("confirmation.php",["panier" => $panier_riche]);
             }catch(PanierException $e)
             {

@@ -11,7 +11,7 @@
                 <p>Vous avez souhaité ajouter l'article suivant :</p>
                 <p><strong><span id="nomProduit"></span></strong></p>
                 <p>Précisez la quantité :</p>
-                <input type="number" min="1" name="qte">
+                <input type="number" class="form-control" min="1" name="qte">
                 <input type="hidden" value="" id="idProduit">
                 <p><small class="error"></small></p>
             </div>

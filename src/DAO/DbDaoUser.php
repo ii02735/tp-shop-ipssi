@@ -34,7 +34,10 @@ class DbDaoUser extends DbDao
         $data = $result[0];
         $user = new Utilisateur();
         $user->setId($data["id"]);
-        $user->setUsername($data["name"]);
+        $user->setName($data["name"]);
+        $user->setFirstname($data["firstname"]);
+        $user->setEmail($data["email"]);
+        $user->setRole($data["role"]);
         $user->setPassword($data["password"]);
 
 
@@ -69,7 +72,10 @@ class DbDaoUser extends DbDao
         $finalResult = $result[0];
         $user = new Utilisateur();
         $user->setId($finalResult["id"]);
-        $user->setUsername($finalResult["name"]);
+        $user->setName($finalResult["name"]);
+        $user->setRole($finalResult["role"]);
+        $user->setFirstname($finalResult["firstname"]);
+        $user->setEmail($finalResult["email"]);
         $user->setPassword($finalResult["password"]);
 
         return $user;
@@ -103,7 +109,10 @@ class DbDaoUser extends DbDao
         {
             $entite = new Utilisateur();
             $entite->setId($tblData["id"]);
-            $entite->setUsername($tblData["name"]);
+            $entite->setName($tblData["name"]);
+            $entite->setFirstname($tblData["firstname"]);
+            $entite->setEmail($tblData["email"]);
+            $entite->setRole($tblData["role"]);
             $entite->setPassword($tblData["password"]);
             array_unshift($entites,$entite); //pousser dans l'ordre croissant
         }
@@ -123,6 +132,7 @@ class DbDaoUser extends DbDao
             $stmt->execute([$user->getId()]);
         }catch(\PDOException $e)
         {
+            file_put_contents(__DIR__."/../../log_error.txt",print_r(["message" => $e->getMessage(), "date" => date("Y-m-d H:i")],true),FILE_APPEND);
             throw new UtilisateurException("L'entité ".$user->getId()." n'existe pas");
         }
     }
@@ -134,13 +144,23 @@ class DbDaoUser extends DbDao
      */
     public function create(Entite $entite): Entite
     {
-        $stmt = $this->pdo->prepare("insert into ".$this->tableName." (name,password) values (?,?)");
-        $stmt->execute([$entite->getUsername(),password_hash($entite->getPassword(),PASSWORD_BCRYPT)]);
-        $stmt = $this->pdo->prepare("select id from ".$this->tableName." order by id desc limit 1"); //On récupère le dernier id existant
-        $stmt->execute();
-        $id = $stmt->fetchColumn();
-        $entite->setId($id);
-        return $entite;
+        try {
+            $stmt = $this->pdo->prepare("insert into " . $this->tableName . " (name,firstname,email,role,password) values (?,?,?,?,?)");
+            //cryptage du mot de passe avec BCRYPT (moins robuste que ARGON mais moins lourd)
+            $res = $stmt->execute([$entite->getName(), $entite->getFirstname(), $entite->getEmail(), $entite->getRole(),password_hash($entite->getPassword(), PASSWORD_BCRYPT)]);
+            $stmt = $this->pdo->prepare("select id from " . $this->tableName . " order by id desc limit 1"); //On récupère le dernier id existant
+            $stmt->execute();
+            $id = $stmt->fetchColumn();
+            $entite->setId($id);
+        }catch(\PDOException $e)
+        {
+            /**
+             * Inscription de l'erreur de la création dans un fichier de log (ajout de true à print_r)
+             */
+            file_put_contents(__DIR__."/../../log_error.txt",print_r(["message" => $e->getMessage(), "code"=>$e->getCode(), "date" => date("Y-m-d H:i")],true),FILE_APPEND);
+            throw new UtilisateurException($e->getMessage(),$e->getCode());
+        }
+            return $entite;
     }
 
 
@@ -157,7 +177,10 @@ class DbDaoUser extends DbDao
         {
             $entite = new Utilisateur();
             $entite->setId($tblData["id"]);
-            $entite->setUsername($tblData["name"]);
+            $entite->setName($tblData["name"]);
+            $entite->setFirstname($tblData["firstname"]);
+            $entite->setEmail($tblData["email"]);
+            $entite->setRole($tblData["role"]);
             $entite->setPassword($tblData["password"]);
             array_unshift($entites,$entite); //pousser dans l'ordre croissant
         }
@@ -173,10 +196,11 @@ class DbDaoUser extends DbDao
     public function update(Entite $entite): Entite
     {
         try {
-            $stmt = $this->pdo->prepare("update ".$this->tableName." set name=?, password=? where id=?");
-            $stmt->execute([$entite->getUsername(), $entite->getPassword(), $entite->getId()]);
+            $stmt = $this->pdo->prepare("update ".$this->tableName." set name=?, firstname=?, email=?, role=?, password=? where id=?");
+            $stmt->execute([$entite->getName(), $entite->getFirstname(),$entite->getEmail(),$entite->getRole(),$entite->getPassword(), $entite->getId()]);
         }catch(\PDOException $e)
         {
+            file_put_contents(__DIR__."/../../log_error.txt",print_r(["message" => $e->getMessage(), "date" => date("Y-m-d H:i")],true),FILE_APPEND);
             throw new UtilisateurException("L'utilisateur ".$entite->getId()." n'a pas pu être mis à jour");
         }
         return $entite;
@@ -205,7 +229,10 @@ class DbDaoUser extends DbDao
         $finalResult = $result[0];
         $entite = new Utilisateur();
         $entite->setId($finalResult["id"]);
-        $entite->setUsername($finalResult["name"]);
+        $entite->setName($finalResult["name"]);
+        $entite->setFirstname($finalResult["firstname"]);
+        $entite->setEmail($finalResult["email"]);
+        $entite->setRole($finalResult["role"]);
         $entite->setPassword($finalResult["password"]);
 
         return $entite;
@@ -236,7 +263,10 @@ class DbDaoUser extends DbDao
         {
             $entite = new Utilisateur();
             $entite->setId($tblData["id"]);
-            $entite->setUsername($tblData["name"]);
+            $entite->setName($tblData["name"]);
+            $entite->setFirstname($tblData["firstname"]);
+            $entite->setEmail($tblData["email"]);
+            $entite->setRole($tblData["role"]);
             $entite->setPassword($tblData["password"]);
             array_unshift($entites,$entite); //pousser dans l'ordre croissant
         }

@@ -17,7 +17,7 @@ use App\Utilitaire;
 //on récupère le script qui a été exécuté par le serveur
 $script = explode("/",$_SERVER["SCRIPT_FILENAME"]);
 $file = end($script);
-
+//Si l'action n'est pas exécutée depuis index.php mais depuis une vue, il faut réécrire l'URL
 if($file != "index.php") {
 
     session_start();
@@ -32,17 +32,14 @@ if($file != "index.php") {
     switch ($file) {
         case "connexion.php":
             if (Utilitaire::exists($_SESSION,["utilisateur"]))
-                header("Location: $index?method=shop");
+                header("Location: $index");
             else
-                header("Location: $index?method=login");
+                header("Location: $index?method=loginPage");
             exit; //pour ne pas continuer après le header
 
         case "boutique.php":
-            if (Utilitaire::exists($_SESSION,["utilisateur"]))
                 header("Location: $index");
-            else
-                header("Location: $index?method=shop");
-            exit;
+                exit;
         case "confirmation.php": //on vérifie qu'un panier pour le client existe
             if(Utilitaire::exists($_SESSION,["utilisateur"])){
 
@@ -52,9 +49,10 @@ if($file != "index.php") {
                     header("Location: $index?method=validateCart");
                 }catch (\App\Exception\PanierException $e)
                 {
-                    header("Location: $index?method=shop");
+                    header("Location: $index");
+                    exit;
                 }
             }
-
+            break;
     }
 }
