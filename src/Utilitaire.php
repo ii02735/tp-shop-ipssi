@@ -51,7 +51,7 @@ class Utilitaire
         //Utilisation de la classe DOMDocument (meilleur traitement d'un fichier XML = suppression des espaces, formatage, etc.)
         $dom = new \DOMDocument("1.0","UTF-8");
         $dom->preserveWhiteSpace = false; //suppression des espaces
-        $dom->load(__DIR__ . "/../config/dependences.xml"); //chargement du fichier d'injection
+        $dom->load(__DIR__ . "/../config/dependances.xml"); //chargement du fichier d'injection
         $dom->formatOutput = true;
         $xpath = new \DOMXPath($dom); //utilisation de XPATH pour naviguer dans le fichier XML
         //on recherche dans le fichier la classe qu'on désire charger automatiquement
